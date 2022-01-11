@@ -1,7 +1,7 @@
 const mongoose =require("mongoose");
 
 // ------------databse connection----------------
-mongoose.connect("mongodb+srv://ngo-user:ngouser@cluster0.pfbcq.mongodb.net/NGO?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://<username>:<password>@cluster0.pfbcq.mongodb.net/<dbname>?retryWrites=true&w=majority", {
     useNewUrlParser:true,
     useUnifiedTopology:true,
    // useCreateIndex:true
