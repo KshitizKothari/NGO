@@ -1,6 +1,6 @@
 const mongoose =    require("mongoose");
 const { stringify } = require("nodemon/lib/utils");
-const ngo_schema = new mongoose.Schema({
+const user = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -41,5 +41,5 @@ const ngo_schema = new mongoose.Schema({
 //creating collections
 
 
-const User = new    mongoose.model("User", ngo_schema);
+const User = new    mongoose.model("User", user);
 module.exports = User;
