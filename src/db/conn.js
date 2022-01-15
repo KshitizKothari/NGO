@@ -1,10 +1,13 @@
+var credientials =require("./credentials");
+
 const mongoose =require("mongoose");
 
+const URI = `mongodb://${credientials.DB_USERNAME}:${credientials.DB_PASSWORD}@cluster0-shard-00-00.pfbcq.mongodb.net:27017,cluster0-shard-00-01.pfbcq.mongodb.net:27017,cluster0-shard-00-02.pfbcq.mongodb.net:27017/${credientials.DATABASE}?ssl=true&replicaSet=atlas-waesu8-shard-0&authSource=admin&retryWrites=true&w=majority`;
 // ------------databse connection----------------
-mongoose.connect("mongodb+srv://<username>:<password>@cluster0.pfbcq.mongodb.net/<dbname>?retryWrites=true&w=majority", {
+mongoose.connect(URI, {
     useNewUrlParser:true,
     useUnifiedTopology:true,
-   // useCreateIndex:true
+//    useCreateIndex:true
 
 }).then(() => {
     console.log(`connection successful`);
@@ -14,3 +17,4 @@ mongoose.connect("mongodb+srv://<username>:<password>@cluster0.pfbcq.mongodb.net
 
 })
 
+module.exports={URI}

@@ -1,15 +1,11 @@
 const mongoose =    require("mongoose");
 const { stringify } = require("nodemon/lib/utils");
 const ngo_schema = new mongoose.Schema({
-    firstname: {
+    name: {
         type: String,
         required: true
       },
        
-    lastname: {
-        type: String,
-        required: true
-      },
     email: {
         type: String,
         required: true,
@@ -34,6 +30,10 @@ const ngo_schema = new mongoose.Schema({
         type: String,
         required: true
       },
+      address:{
+        type: String,
+        required: true
+      }
    
 })
 
