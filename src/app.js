@@ -16,7 +16,7 @@ const bcrypt=require('bcryptjs');
 
 const port = process.env.PORT || 3000;
 
-const static_path = path.join(__dirname, "../public/html")
+const static_path = path.join(__dirname, "../public")
 
 const store = new MongoDBSession({
     uri:  `mongodb://${credientials.DB_USERNAME}:${credientials.DB_PASSWORD}@cluster0-shard-00-00.pfbcq.mongodb.net:27017,cluster0-shard-00-01.pfbcq.mongodb.net:27017,cluster0-shard-00-02.pfbcq.mongodb.net:27017/${credientials.DATABASE}?ssl=true&replicaSet=atlas-waesu8-shard-0&authSource=admin&retryWrites=true&w=majority`,
