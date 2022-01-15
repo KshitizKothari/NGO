@@ -42,7 +42,7 @@ app.get("/", (req, res) =>{
 
 
 
-
+// ------------------Get User Registration------------------ 
 app.get("/userRegistration", function(req,res){
     res.redirect('userRegistration.html');
 })
@@ -74,17 +74,24 @@ app.post("/userRegistration", async (req,res)=> {
          
 }
 )
-// --------------Counsellor Registration-----------------
+
+// ---------------------Get Counsellor Registration-------------------------------------
+app.get("/counsellorRegistration", function(req,res){
+    res.redirect("counsellorRegistration.html");
+})
+
+// --------------Post Counsellor Registration--------------------------------
 app.post("/counsellorRegistration", async (req,res)=> {
     var counsellor= new Counsellor();
 
+    // console.log(req.body.qualificaiton);
     counsellor.email   =   req.body.email;
     counsellor.name   =   req.body.name;
     counsellor.age =   req.body.age;
     counsellor.phone   =   req.body.phone;
     counsellor.address =   req.body.address;
     counsellor.govtId = req.body.govtId;
-    counsellor.qualification = req.npdy.qualificaiton;
+    counsellor.qualification = req.body.qualification;
     counsellor.description = req.body.description;
     counsellor.password    =   await bcrypt.hash(req.body.password,12);
 
@@ -149,7 +156,7 @@ app.get("/counsellorLogin", async (req,res) =>{
 
 //----------user dashboard---------------
 app.get("/userDashboard", (req,res) =>{
-    var projection = { name:1, description:1, age:1}
+    var projection = { name:1, qualification:1, description:1, age:1}
     Counsellor.find({}, projection, function(err,counsellors){
         if(err){
             console.log(err);
