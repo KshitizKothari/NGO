@@ -7,11 +7,12 @@
     <script defer src="../js/userRegistration.js"></script>
 </head>
 <body>
+  <%- include('header') %>
   <div class="container">
-<form action="/userLogin" method="POST" id="form" style="border:1px solid #ccc">
+<form action="/counsellorLogin" method="POST" id="form" style="border:1px solid #ccc">
   
-    <h1>User Registration</h1>
-    <p>Please fill in this form to create an account.</p>
+    <h1>Counseller Login</h1>
+   
     <hr>
   
   <div class="input-control"> 
@@ -40,5 +41,7 @@
 </form>
 </div>
 
+
+<%- include('footer') %>
 </body>
 </html>

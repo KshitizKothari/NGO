@@ -41,6 +41,10 @@ const counsellor = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image:{
+    type: String,
+    default: 'default_profile.png'
+  }
 });
 
 //creating collections

@@ -7,6 +7,10 @@
     <script defer src="js/userRegistration.js"></script>
 </head>
 <body>
+  <!-- IMPORTING HEADER -->
+
+<%- include('header') %>
+
   <div class="container">
 <form action="/userRegistration" method="POST" id="form" style="border:1px solid #ccc">
   
@@ -19,7 +23,7 @@
     <div class="error"></div>
   </div>
   
-  </div>
+
     <div class="input-control">
     <label for="Age"><b>Age</b></label>
     <input type="number" placeholder="Age" name="age" id="age">
@@ -73,6 +77,8 @@
  
 </form>
 </div>
+<!-- IMPORTING FOOTER -->
 
+<%- include('footer') %>
 </body>
 </html>

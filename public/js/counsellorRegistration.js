@@ -11,7 +11,7 @@ const password = document.getElementById('password');
 const password2 = document.getElementById('password2');
 
 form.addEventListener('submit', e => {
-    e.preventDefault();
+    // e.preventDefault();
 
     validateInputs();
 });
@@ -39,10 +39,7 @@ const isValidEmail = email => {
     return re.test(String(email).toLowerCase());
 }
 
-const isValidPhone = phone => {
-    const phoneno = /^[6-9]\d{9}$/;
-    return phoneno;
-}
+
 
 const validateInputs = () => {
     const usernameValue = username.value.trim();
@@ -72,7 +69,7 @@ const validateInputs = () => {
 
     if(phoneValue === '') {
         setError(phone, 'Phone number is required');
-    } else if (isValidPhone.length != 10) {
+    } else if (phoneValue.length != 10) {
         setError(phone, 'Provide a valid phone number');
     } else {
         setSuccess(phone);
@@ -99,9 +96,9 @@ const validateInputs = () => {
     if(aboutValue === '') {
         setError(about, 'About yourself is required');
     }
-    else if((aboutValue.length > 100) || (aboutValue.length < 500)){
-        setError(about, "Tell us about yourself in mininmum 20 words and maximum 100 words")
-    }
+    // else if((aboutValue.length > 100) || (aboutValue.length < 500)){
+    //     setError(about, "Tell us about yourself in mininmum 20 words and maximum 100 words")
+    // }
     else {
         setSuccess(about);
     }
