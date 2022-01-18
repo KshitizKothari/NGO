@@ -60,7 +60,7 @@ const validateInputs = () => {
     }
 
     if(govtIdValue.length!=12){
-        setError(govtId, govtIdValue.length );
+        setError(govtId, "Government id should be 12 digit number" );
         isValidated = false;
     }else{
         setSuccess(username);
@@ -122,5 +122,5 @@ const validateInputs = () => {
     } else {
         setSuccess(password2);
     }
-
+    return isValidated;
 };
