@@ -13,9 +13,72 @@
 
 
     <link rel="stylesheet" href="css/userDashboard.css">
+
+
+
+
 </head>
 <!------ Include the above in your HEAD tag ---------->
-<body>
+<body onload="start()">
+    <!-- JAVASCRIPT -->
+
+<script type="text/javascript">
+    function displayDate() {
+        document.getElementById("showDate").innerHTML=Date();
+        // var date = new Date("showDate");
+        // date.setDate(date.getDate() + 7);
+
+        // console.log(date);
+    }
+ function getDatess() {
+    for(var i=1;i<=7;i++)
+    {
+        var date = new Date();
+        date.setDate(date.getDate() + i)
+        var complete_date=date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear();
+        document.getElementById(i).innerHTML=complete_date;
+        document.getElementById(i).value=complete_date;
+        console.log(complete_date);
+    }
+    
+    
+    
+    
+    // var today = new Date();
+    //  var week = new Date();
+    //  displayDate();
+    //  week.setDate(week.getDatess() + 7);
+    //  document.getElementById('current').innerHTML   =   currentdate;
+    //  document.getElementById('week').innerHTML  =   week;
+ }
+ 
+
+function disableHTML(item) {
+    document.getElementById(item).disabled = true;
+}
+ function checkButton(){
+     console.log('<%=date%>');
+     console.log('<%=slotsBooked%>');
+     if('<%=date%>'!='' && '<%=slotsBooked.length%>'>0)
+     {
+        '<%slotsBooked.forEach(slots =>{ %>'
+        disableHTML('<%=slots.time%>');
+        '<%})%>'
+     }
+    //  console.log(JSON.stringify('<%=slotsBooked%>'));
+    // let slotsBooked = '<%=slotsBooked%>'
+    // console.log(JSON.stringify(slotsBooked));
+    // if(slotsBooked.length!=0)
+    // {
+    //     // slotsBooked.forEach(disableHTML);    
+    // }
+ }
+
+ function start(){
+     getDatess();
+    checkButton();
+ }
+</script>
 
     <!-- Sidebar Holder -->
 
@@ -31,7 +94,7 @@
                 <button class="btn btn-light d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="Toggle navigation">
-                    <i class="fas fa-align-justify"></i>
+                    <i style="font-size:20px" class="fa">&#xf039;</i>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -54,14 +117,47 @@
         </nav>
         <div id="content">
 
-        <div class="container">
 
-            <div class="row">
+            <div class="container ">
 
+                <div class="row">
+    
+                    <div class="col-sm-5 col-md-4 justify-content-center ">
+                        <h1 class="">Select the date</h1>
+                <!-- <div > -->
+                    <form action="/checkDateAvailability" method="POST">
+                        <input type="text" value=<%=counsellor_id%> name="counsellor_id" style="display: none;">
+                        <select class="form-select p-3 text-center m-4 d-block" name="date" id="date">
+                            <% for (var a =1; a <=7;  a++ ) { %>
+                          <option id='<%= a %>' value=''></option>
+                          <% } %>
+                        </select>
+                        <input type="submit" class="btn btn-lg m-4 btn-primary" value="Search" />
+                  </form>
+                  <!-- </div> -->
+                  </div>
+
+                  <div class="col-sm-2 col-md-8 d-inline-block">
+                  
+                      
+                      <%if(date.length!=0){%>
+                        <h3>Select your timings for <%=date%> </h3>
+                        <% for (var i =10; i <=17;  i++ ) { %>
+                            <form class="d-inline" action="/setAppointment" method="POST">
+                                <input value="<%=i%>":00 name="time" style="display: none;"/>
+                                <input value="<%=counsellor_id%>" name="counsellor_id" style="display: none;"/>
+                                <input value="<%=date%>" name="date" style="display: none;"/>
+                                <button class="btn btn-primary btn-lg" type="submit" role="button" id='<%=i%>'  aria-pressed="true"><%=i%>:00</button>
+                            </form>
+                        <%}%>
+                        <%}%>
+                        <!-- <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">11:00am-12:00pm</a>
+                        <button type="button" class="btn btn-secondary btn-lg" disabled>12:00PM-01:00PM</button> -->
                 
             </div>
 
         </div>
+    </div>
     </div>
 
 

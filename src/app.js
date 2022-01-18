@@ -64,23 +64,35 @@ const isCounsellorAuth = (req, res, next) => {
     }
 }
 
+const isNotAuth = (req, res, next) => {
+    if(req.session.isAuth && req.session.role==="user"){
+        res.redirect("/userDashboard");
+    }
+    else if(req.session.isAuth && req.session.role==="counsellor"){
+        res.redirect("/counsellorDashboard");
+    }
+    else{
+        
+        next();
+    }
+}
 
-app.get("/", (req, res) =>{
+app.get("/", isNotAuth, (req, res) =>{
     res.render("index",{"title":"Confab"});
 });
 
-app.get("/aboutUs", (req, res) =>{
+app.get("/aboutUs", isNotAuth,(req, res) =>{
     res.render("aboutUs",{"title":"About Us"});
 });
 
 
 // ------------------Get User Registration------------------ 
-app.get("/userRegistration", function(req,res){
+app.get("/userRegistration", isNotAuth, function(req,res){
     res.render('userRegistration',{"title":"Register"});
 })
 
 // ------------------User Registration---------------
-app.post("/userRegistration", async (req,res)=> {
+app.post("/userRegistration", isNotAuth, async (req,res)=> {
     var user= new User();
 
     user.email   =   req.body.email;
@@ -123,12 +135,12 @@ app.post("/userRegistration", async (req,res)=> {
 )
 
 // ---------------------Get Counsellor Registration-------------------------------------
-app.get("/counsellorRegistration", function(req,res){
+app.get("/counsellorRegistration", isNotAuth, function(req,res){
     res.render("counsellorRegistration",{"title":"Register"});
 })
 
 // --------------Post Counsellor Registration--------------------------------
-app.post("/counsellorRegistration", async (req,res)=> {
+app.post("/counsellorRegistration", isNotAuth, async (req,res)=> {
     var counsellor= new Counsellor();
 
     // console.log(req.body.qualificaiton);
@@ -175,12 +187,12 @@ app.post("/counsellorRegistration", async (req,res)=> {
 )
 
 // --------------------------Get User Login----------------------
-app.get("/userLogin", function(req,res){
+app.get("/userLogin", isNotAuth, function(req,res){
     res.render("userLogin",{"title":"Login"});
 })
 
 //--------------Post User Login-----------------------------------
-app.post("/userLogin", async (req,res) =>{
+app.post("/userLogin", isNotAuth, async (req,res) =>{
     const { email, password } =req.body;
     const user = await User.findOne({email:email});
 
@@ -202,7 +214,7 @@ app.post("/userLogin", async (req,res) =>{
 });
 
 // -----------------Get Counsellor Login---------------------------------------
-app.get("/counsellorLogin", function(req,res){
+app.get("/counsellorLogin", isNotAuth, function(req,res){
     res.render("counsellorLogin",{"title":"Login"});
 })
 //  ---------------------Post Counsellor Login----------------------------------------
@@ -227,19 +239,25 @@ app.post("/counsellorLogin", async (req,res) =>{
     }
 });
 
-//----------Get User Dashboard---------------
+//-------------------------------------Get User Dashboard-----------------------------------
 app.get("/userDashboard", isUserAuth, async (req,res) =>{
-    var counsellor_projection = { name:1, qualification:1, description:1, age:1}
+    var counsellor_projection = { _id:1, name:1, qualification:1, description:1, age:1}
     var appointment_projection = { date:1, time:1, counsellor:1 };
-
-
+    var user_id = JSON.parse(JSON.stringify(req.session.user_id))
+    console.log(user_id);
+    // Appointment.find({date:req.body.date, "counsellor.id": counsellor_id}, appointment_projection);
     const counsellors = await Counsellor.find({}, counsellor_projection);
-    const appointments = await Appointment.find({_id:req.session.user_id}, appointment_projection);
-    // console.log(counsellors);
+    var appointments = await Appointment.find({ "user.id": user_id }, appointment_projection);
+    console.log(appointments);
+    if(appointments===null){
+        appointments=[]
+    }
     res.render("userDashboard", {"title":"Dashboard","counsellors" : counsellors, "appointments": appointments})
 
     
 })
+
+
 
 
 // ------------Get User Appointment Details-----------------------
@@ -261,34 +279,62 @@ app.get("/userDashboard", isUserAuth, async (req,res) =>{
 
 
 app.get("/setAppointment", isUserAuth, (req,res) => {
-    res.render('setAppointment', {"title": "Set Appoitment"})
+    var counsellor_id=req.query.counsellor_id;
+    // console.log("counsellor id------------------------------------------------")
+    // console.log(counsellor_id);
+    res.render('setAppointment', {"title": "Set Appoitment", "counsellor_id": counsellor_id, "date": '',"slotsBooked":[{"time":"10:00"},{ "time": "13:00"}]})
+})
+
+//  ---------------------------Check Availability of counsellor on particular date---------------------------------
+app.post("/checkDateAvailability", isUserAuth, async (req,res) => {
+    // console.log(req.body.date);
+    var counsellor_id=req.body.counsellor_id;
+    var appointment_projection = {time:1};
+    var counsellor_projection = { _id:1, name:1, qualification:1, description:1};
+    // checking the booked slots
+    // console.log("date----------------------------");
+    // console.log(req.body.date);
+    // console.log(counsellor_id);
+    var slotsBooked = await Appointment.find({date:req.body.date, "counsellor.id": counsellor_id}, appointment_projection);
+    const counsellor= await Counsellor.findOne({_id:counsellor_id}, counsellor_projection);
+    console.log(slotsBooked);
+    if(slotsBooked===null){
+        // console.log("NUll slots booked");
+        slotsBooked=[]
+    }
+    
+    res.render('setAppointment', {"title": "Set Appoitment", "counsellor_id": counsellor_id, "slotsBooked":slotsBooked, "counsellor": counsellor, "date":req.body.date})
 })
 
 // ------------------------------set user appointment----------------------------------
 app.post("/setAppointment", isUserAuth, async (req,res) =>{
-    var user_query={ date:req.body.date, time:req.body.time, user_id:req.body.user_id}
+    var user_query={ date:req.body.date, time:req.body.time, user_id:req.session.user_id}
     var counsellor_query={ counsellor_id: req.body.counsellor_id, date:req.body.date, time:req.body.time}
     
-
     
-    const user_schedule_clear = await Appointment.find(user_query);
-    const counsellor_schedule_clear = await Appointment.find(counsellor_query);
+    const user_schedule_clear = await Appointment.findOne(user_query);
+    const counsellor_schedule_clear = await Appointment.findOne(counsellor_query);
     if(user_schedule_clear!=null || counsellor_schedule_clear!=null)
     {
-        return res.send("Can't book appointment at this time");
+        return res.send("Oops.. seems like you already have an appoinment at this time try another time");
     }
-    var user = await User.findOne({_id:req.body.user_id}, { _id:1, email:1, name:1});
+
+    // console.log("displaying counsellor id");
+    // console.log(counsellor_id);
+    var user = await User.findOne({_id:req.session.user_id}, { _id:1, email:1, name:1});
     var counsellor = await Counsellor.findOne({_id:req.body.counsellor_id}, { _id:1, email:1, name:1});
+    // console.log("showing counsellor details");
+    // console.log(counsellor_details);
     var appointment = Appointment( {
         time: req.body.time,
         date: req.body.date,
         counsellor: {
-            id: counsellor._id,
+            id: counsellor.id,
             email: counsellor.email,
             name: counsellor.name
         },
-        user: {
-            id: user._id,
+        user:{
+            id: user.id,
             email: user.email,
             name: user.name
         },
@@ -298,11 +344,11 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
         if(err){
             console.log(err);
             
-            res.send("Cannot create Counsellor with these credentials");
+            res.send("Cannot create appointment with these credentials");
         }
         else{
             console.log(newappointment)
-            res.send("Going to user dashboard");
+            res.redirect("/userDashboard");
             // res.redirect('userDashboard.html');
 
             // ----------------------------------------------sending email for appointment--------------------------------
@@ -325,7 +371,7 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
             });
             var mailOptions = {
                 from: EMAIL,
-                to: user.email,
+                to: counsellor.email,
                 subject: 'New Appointment booked',
                 text: counsellor_text
             };
@@ -341,38 +387,23 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
         }
     });
 
-
-    // Appointment.find(counsellor_query, function(err,appointments){
-    //     if(err){
-    //         console.log(err);
-    //         const dataInserted=await Appointment.insertOne(data);
-    //         if(!dataInserted){
-    //             // console.log()
-    //             res.send("Could book the appointment");
-    //         }
-    //         else{
-    //             res.send("Appointment booked");
-    //         }
-            
-    //     }
-    //     else{
-    //         // res.send(appointments);
-    //         res.status(400).send({error:"Cannot book appointment at this date and time"});
-    //     }
-    // })
 })
 
 //------------------------------Get Counsellor Dashboard-----------------------------------------------------
 
 app.get("/counsellorDashboard", isCounsellorAuth, async (req,res) =>{
     var counsellor_projection = { name:1, qualification:1, description:1, age:1}
-    var query = {_id:req.session.counsellor_id}
-    var appointment_projection = { date:1,time:1 };
+    var counsellor_id = JSON.parse(JSON.stringify(req.session.counsellor_id))
+    var query = {_id:counsellor_id}
+    var appointment_projection = { date:1,time:1, user:1 };
 
 
     const counsellor = await Counsellor.findOne(query, counsellor_projection);
-    const appointments = await Appointment.find({_id:req.session.counsellor_id}, appointment_projection);
+    var appointments = await Appointment.find({ "counsellor.id": counsellor_id }, appointment_projection);
     // console.log(counsellors);
+    if(appointments===null){
+        appointments=[]
+    }
     res.render("counsellorDashboard", {"title":"Dashboard","counsellor" : counsellor, "appointments": appointments})
 
 })

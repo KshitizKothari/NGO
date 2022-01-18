@@ -9,17 +9,17 @@ const appointment = new mongoose.Schema({
     type: String,
     require: true,
   },
-  user: new mongoose.Schema({
+  user: {
     id:{type: String, require: true},
     email: { type: String, require: true },
     name: { type: String, require: true },
-  }),
+  },
 
-  counsellor: new mongoose.Schema({
+  counsellor: {
     id:{type: String, require: true},
     email: { type: String, require: true },
     name: { type: String, require: true },
-  }),
+  },
 });
 
 //creating collections

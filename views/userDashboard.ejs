@@ -71,7 +71,10 @@
                                 </h6>
                                 <p class="card-text">
                                     <%= counsellor.description%>
-                                        <a href="#" class="card-link d-block btn btn-primary">Card link</a>
+                                    <form action="/setAppointment" method="GET">
+                                        <input type="text" style="display: none;" name="counsellor_id" value="<%=counsellor._id%>"/>
+                                        <button href="#" type="submit" class="card-link d-block btn btn-primary">Book Appointment</button>
+                                    </form>
 
                             </div>
                         </div>
@@ -82,33 +85,22 @@
             <div class="col-sm-4 col-md-4 mt-3">
                 <div class="list-group">
                     <h2>Appointments</h2>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small>3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small>Donec id elit non mi porta.</small>
-                    </a>
+                    <%if(appointments.length!=0){%>
+                        <%appointments.forEach(appointment => {%>
                     <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
+                            <h5 class="mb-1">You have an appointment with <%=appointment.counsellor.name%> on <%=appointment.date%> at <%=appointment.time%> O'clock </h5>
+                            </div>
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
-                    </a>
+
+                    <%})}else{%>
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">You have an no appointment till now.</h5>
+                                </div>
+                        </a>
+                    <%}%>
+                    
                 </div>
             </div>
         </div>

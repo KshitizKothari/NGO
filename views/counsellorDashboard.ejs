@@ -35,12 +35,7 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="nav navbar-nav ml-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">ABOUT US</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">CONTACT US</a>
-                        </li>
+                        
                         <li class="nav-item">
                             <!-- <form action="/logout" method="POST"> -->
                                 <a class="nav-link" href="/logout">LOGOUT</a>
@@ -59,7 +54,8 @@
             <div class="row">
 
                 <div class="col">
-                    <h1><%=counsellor.name%></h1>
+                    <h1 class="font-weight-bold">Profile</h1>
+                    <h2 class="font-weight-normal"><%=counsellor.name%></h1>
                     <h4 class="d-block"><%= counsellor.qualification %></h4>
                     <h4 class="d-block"> <%= counsellor.description%></h4>
 
@@ -68,33 +64,22 @@
             <div class="col-sm-4 col-md-4 mt-3">
                 <div class="list-group">
                     <h2>Appointments</h2>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small>3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small>Donec id elit non mi porta.</small>
-                    </a>
+                    <%if(appointments.length!=0){%>
+                        <%appointments.forEach(appointment => {%>
                     <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
+                            <h5 class="mb-1">You have an appoinement with <%=appointment.user.name%> on <%=appointment.date%> at <%=appointment.time%> O'clock </h5>
+                            </div>
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
-                    </a>
+
+                    <%})}else{%>
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">You have an no appointment till now.</h5>
+                                </div>
+                        </a>
+                    <%}%>
+                    
                 </div>
             </div>
         </div>
