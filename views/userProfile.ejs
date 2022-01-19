@@ -35,7 +35,11 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="nav navbar-nav ml-auto">
-                        
+                        <li class="nav-item">
+                            <!-- <form action="/logout" method="POST"> -->
+                                <a class="nav-link" href="/userDashboard">HOME</a>
+                            <!-- </form> -->
+                        </li>
                         <li class="nav-item">
                             <!-- <form action="/logout" method="POST"> -->
                                 <a class="nav-link" href="/logout">LOGOUT</a>
@@ -53,35 +57,19 @@
 
             <div class="row">
 
-                <div class="col">
+                <div class="col card">
                     <h1 class="font-weight-bold">Profile</h1>
-                    <img src="uploads/<%= counsellor.image %>" width="100px" style="border-radius: 50%;" alt="profile image"/>
-                    <h2 class="font-weight-normal"><%=counsellor.name%></h1>
-                    <h4 class="d-block"><%= counsellor.qualification %></h4>
-                    <h4 class="d-block"> <%= counsellor.description%></h4>
+                    <!-- <img src="uploads/<%= user.image %>" width="100px" style="border-radius: 50%;" alt="profile image"/> -->
+                    <h2 class="font-weight-normal">Name : <%=user.name%></h1>
+                    <h4 class="d-block">Age : <%= user.age %></h4>
+                    <h4 class="d-block">Phone Number : <%= user.phone%></h4>
+                    <h4 class="d-block">Address : <%= user.address%></h4>
+                    <h4 class="d-block">Government ID : <%= user.govtId%></h4>
 
                 </div>
 
             <div class="col-sm-4 col-md-4 mt-3">
-                <div class="list-group">
-                    <h2>Appointments</h2>
-                    <%if(appointments.length!=0){%>
-                        <%appointments.forEach(appointment => {%>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">You have an appoinement with <%=appointment.user.name%> on <%=appointment.date%> at <%=appointment.time%> O'clock </h5>
-                            </div>
-                    </a>
-
-                    <%})}else{%>
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">You have an no appointment till now.</h5>
-                                </div>
-                        </a>
-                    <%}%>
-                    
-                </div>
+               
             </div>
         </div>
 

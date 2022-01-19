@@ -13,6 +13,12 @@
 
 
     <link rel="stylesheet" href="css/userDashboard.css">
+    <title>Dashboard</title>
+    <style>
+        .center-cropped {
+        width: 150px; height: 150px; object-fit: cover;
+        }
+    </style>
 </head>
 <!------ Include the above in your HEAD tag ---------->
 <body>
@@ -31,17 +37,19 @@
                 <button class="btn btn-light d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="Toggle navigation">
-                    <i class="fas fa-align-justify"></i>
+                    <i>&#9776;</i>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="nav navbar-nav ml-auto">
                         <!-- <li class="nav-item active">
                             <a class="nav-link" href="#">ABOUT US</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">CONTACT US</a>
                         </li> -->
+                        <li class="nav-item">
+                            <!-- <form action="/logout" method="POST"> -->
+                                <a class="nav-link" href="/userProfile">PROFILE</a>
+                            <!-- </form> -->
+                        </li>
                         <li class="nav-item">
                             <!-- <form action="/logout" method="POST"> -->
                                 <a class="nav-link" href="/logout">LOGOUT</a>
@@ -62,18 +70,23 @@
                     <h1>Counsellors</h1>
                     <%counsellors.forEach(counsellor=>{%>
                         <div class="card mt-3 ml-2" style="width: 18rem;">
+                            <div class="text-center">
+                                <img class="card-img-top rounded-circle center-cropped mt-2"  src="uploads/<%=counsellor.image%>" alt="Profile Image">
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title">
+                                <h5 class="card-title text-center font-weight-bold">
                                     <%=counsellor.name%>
                                 </h5>
-                                <h6 class="card-subtitle mb-2 text-muted">
+                                <h6 class="card-subtitle mb-2  text-center">
                                     <%= counsellor.qualification %>
                                 </h6>
-                                <p class="card-text">
+                                <p class="card-text text-center">
                                     <%= counsellor.description%>
                                     <form action="/setAppointment" method="GET">
                                         <input type="text" style="display: none;" name="counsellor_id" value="<%=counsellor._id%>"/>
-                                        <button href="#" type="submit" class="card-link d-block btn btn-primary">Book Appointment</button>
+                                        <div class="text-center">
+                                        <button href="#" type="submit" class="card-link btn btn-primary">Book Appointment</button>
+                                        </div>
                                     </form>
 
                             </div>

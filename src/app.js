@@ -14,11 +14,24 @@ const { request } = require("http");
 const { EMAIL, PASSWORD } =require('./confidentials/ngoMailCredentials')
 const session = require('express-session');
 const MongoDBSession = require('connect-mongodb-session')(session);
-const bcrypt=require('bcryptjs');
+const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const { render } = require("express/lib/response");
 
 const port = process.env.PORT || 3000;
 
 const static_path = path.join(__dirname, "../public")
+
+const storage=multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads');
+    },
+    filename: (req,file,cb) => {
+        cb(null, Date.now()+path.extname(file.originalname))
+    }
+})
+
+const upload =multer({storage: storage});
 
 const store = new MongoDBSession({
     uri:  `mongodb://${credientials.DB_USERNAME}:${credientials.DB_PASSWORD}@cluster0-shard-00-00.pfbcq.mongodb.net:27017,cluster0-shard-00-01.pfbcq.mongodb.net:27017,cluster0-shard-00-02.pfbcq.mongodb.net:27017/${credientials.DATABASE}?ssl=true&replicaSet=atlas-waesu8-shard-0&authSource=admin&retryWrites=true&w=majority`,
@@ -140,7 +153,7 @@ app.get("/counsellorRegistration", isNotAuth, function(req,res){
 })
 
 // --------------Post Counsellor Registration--------------------------------
-app.post("/counsellorRegistration", isNotAuth, async (req,res)=> {
+app.post("/counsellorRegistration", upload.single('profileImage'), isNotAuth, async (req,res)=> {
     var counsellor= new Counsellor();
 
     // console.log(req.body.qualificaiton);
@@ -153,6 +166,8 @@ app.post("/counsellorRegistration", isNotAuth, async (req,res)=> {
     counsellor.qualification = req.body.qualification;
     counsellor.description = req.body.description;
     counsellor.password    =   await bcrypt.hash(req.body.password,12);
+    if(req.file)
+        counsellor.image = req.file.filename;
 
     
     counsellor.save(function(err,newcounsellor){
@@ -241,11 +256,11 @@ app.post("/counsellorLogin", async (req,res) =>{
 
 //-------------------------------------Get User Dashboard-----------------------------------
 app.get("/userDashboard", isUserAuth, async (req,res) =>{
-    var counsellor_projection = { _id:1, name:1, qualification:1, description:1, age:1}
+    var counsellor_projection = { _id:1, name:1, qualification:1, description:1, age:1, image:1}
     var appointment_projection = { date:1, time:1, counsellor:1 };
     var user_id = JSON.parse(JSON.stringify(req.session.user_id))
     console.log(user_id);
-    // Appointment.find({date:req.body.date, "counsellor.id": counsellor_id}, appointment_projection);
+
     const counsellors = await Counsellor.find({}, counsellor_projection);
     var appointments = await Appointment.find({ "user.id": user_id }, appointment_projection);
     console.log(appointments);
@@ -353,8 +368,8 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
 
             // ----------------------------------------------sending email for appointment--------------------------------
             
-            var user_text = `Your appointment is successfully booked with ${counsellor.name} on ${req.body.date} ${req.body.time}`
-            var counsellor_text = `You have an appointment booked with ${user.name} on ${req.body.date} ${req.body.time}`
+            var user_text = `Your appointment is successfully booked with ${counsellor.name} on ${req.body.date} at ${req.body.time}:00`
+            var counsellor_text = `You have an appointment booked with ${user.name} on ${req.body.date} at ${req.body.time}:00`
             var mailOptions = {
                 from: EMAIL,
                 to: user.email,
@@ -392,7 +407,7 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
 //------------------------------Get Counsellor Dashboard-----------------------------------------------------
 
 app.get("/counsellorDashboard", isCounsellorAuth, async (req,res) =>{
-    var counsellor_projection = { name:1, qualification:1, description:1, age:1}
+    var counsellor_projection = { name:1, qualification:1, description:1, age:1, image:1}
     var counsellor_id = JSON.parse(JSON.stringify(req.session.counsellor_id))
     var query = {_id:counsellor_id}
     var appointment_projection = { date:1,time:1, user:1 };
@@ -406,6 +421,13 @@ app.get("/counsellorDashboard", isCounsellorAuth, async (req,res) =>{
     }
     res.render("counsellorDashboard", {"title":"Dashboard","counsellor" : counsellor, "appointments": appointments})
 
+})
+
+app.get("/userProfile", isUserAuth, async(req,res) =>{
+    var user_id = req.session.user_id;
+    const user = await User.findOne({_id: user_id},{email:1, name:1, age:1, address:1, phone:1, govtId:1});
+    console.log(user);
+    res.render("userProfile",{"title":"Profile", "user": user});
 })
 
 app.get("/logout", (req,res) => {

@@ -13,7 +13,7 @@
 
   <!-- - Name, age, qualification degree, phone, govt id, email, password, description (about the counsellor) -->
   <div class="container">
-    <form action="/counsellorRegistration" method="POST" id="form" style="border:1px solid #ccc">
+    <form action="/counsellorRegistration" method="POST" enctype="multipart/form-data" id="form" style="border:1px solid #ccc">
       
         <h1>Counsellor Registration</h1>
         <p>Please fill in this form to create an account.</p>
@@ -78,10 +78,10 @@
         <input type="password" placeholder="Confirm Password" name="password2" id="password2">
         <div class="error"></div>
       </div>
-      <!-- <div class="input-control">
+      <div class="input-control">
         <label for="image"><b>Profile Image</b></label>
         <input type="file" name="profileImage" accept="image/*" />
-      </div> -->
+      </div>
         <button type="submit" id="submit" class="signupbtn">Sign Up</button>
      
     </form>
