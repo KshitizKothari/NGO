@@ -273,26 +273,6 @@ app.get("/userDashboard", isUserAuth, async (req,res) =>{
 })
 
 
-
-
-// ------------Get User Appointment Details-----------------------
-// app.get("/userAppointment",isUserAuth, (req,res) =>{
-//     var projection = { date:1,time:1 };
-//     console.log("In appointment");
-//     console.log(req.body.id);
-//     Appointment.find({_id: req.body.user_id}, projection, function(err,appointments){
-//         if(err){
-//             console.log(err);
-//             response.status(500).send({error:"Counsellor not found"});
-//         }
-//         else{
-//             res.send(appointments);
-            
-//         }
-//     })
-// })
-
-
 app.get("/setAppointment", isUserAuth, (req,res) => {
     var counsellor_id=req.query.counsellor_id;
     // console.log("counsellor id------------------------------------------------")
@@ -428,6 +408,65 @@ app.get("/userProfile", isUserAuth, async(req,res) =>{
     const user = await User.findOne({_id: user_id},{email:1, name:1, age:1, address:1, phone:1, govtId:1});
     console.log(user);
     res.render("userProfile",{"title":"Profile", "user": user});
+})
+
+app.post("/deleteAppointment", isCounsellorAuth, async (req, res) => {
+    var id= req.body.appointment_id
+    var appointment = await Appointment.findOne({_id:id});
+    // var user = await User.findOne({email:appointment.user.email},{email:1, name:1});
+    // var counsellor_id = req.session.counsellor_id;
+    // var counsellor = await Counsellor.findOne({_id:counsellor_id},{email:1,name:1});
+    var user = appointment.user;
+    var counsellor = appointment.counsellor;
+    var date = req.body.date;
+    var time = req.body.time;
+    // console.log(user);
+    // console.log(counsellor);
+    // console.log(counsellor.email);
+    // console.log(req.body.date);
+    // console.log(req.body.time);
+    // Appointment.remove({})
+
+    Appointment.deleteOne({_id:appointment.id}, (err, res) => {
+        if(err){
+            res.status(500).send("Couldn't delete appointment");
+            console.log(err);
+        }
+        else{
+            // ------------------------------------Sending email---------------------------------------------------
+            var user_text = `Your appointment with ${counsellor.name} on ${date} at ${time}:00 has been cancelled by the counsellor`
+            var counsellor_text = `You have cancelled appointment with ${user.name} on ${date} at ${time}:00`
+            var mailOptions = {
+                from: EMAIL,
+                to: user.email,
+                subject: 'Appointment cancelled',
+                text: user_text
+            };
+                
+            transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+            });
+            var mailOptions = {
+                from: EMAIL,
+                to: counsellor.email,
+                subject: 'Appointment cancelled',
+                text: counsellor_text
+            };
+                    
+            transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+            });
+        }
+    })
+    res.redirect("/counsellorDashboard");
 })
 
 app.get("/logout", (req,res) => {

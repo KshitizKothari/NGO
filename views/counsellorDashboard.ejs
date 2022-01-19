@@ -13,6 +13,11 @@
 
 
     <link rel="stylesheet" href="css/userDashboard.css">
+    <style>
+        .center-cropped {
+        width: 150px; height: 150px; object-fit: cover;
+        }
+    </style>
 </head>
 <!------ Include the above in your HEAD tag ---------->
 <body>
@@ -55,8 +60,8 @@
 
                 <div class="col">
                     <h1 class="font-weight-bold">Profile</h1>
-                    <img src="uploads/<%= counsellor.image %>" width="100px" style="border-radius: 50%;" alt="profile image"/>
-                    <h2 class="font-weight-normal"><%=counsellor.name%></h1>
+                    <img src="uploads/<%= counsellor.image %>" class="center-cropped" style="border-radius: 50%;" alt="profile image"/>
+                    <h2 class="font-weight-normal mt-2"><%=counsellor.name%></h1>
                     <h4 class="d-block"><%= counsellor.qualification %></h4>
                     <h4 class="d-block"> <%= counsellor.description%></h4>
 
@@ -67,16 +72,25 @@
                     <h2>Appointments</h2>
                     <%if(appointments.length!=0){%>
                         <%appointments.forEach(appointment => {%>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <a  class="list-group-item list-group-item-action flex-column align-items-start">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">You have an appoinement with <%=appointment.user.name%> on <%=appointment.date%> at <%=appointment.time%> O'clock </h5>
+                            <h5 class="mb-1 text-muted">You have an appointment with <%=appointment.user.name%> on <%=appointment.date%> at <%=appointment.time%> O'clock </h5>
+                              
+                        </div>
+                            <div class="text-center">
+                                <form method="POST" action="/deleteAppointment">
+                                    <input type="text" style="display: none;" name="appointment_id" value="<%=appointment._id%>"/>
+                                    <input type="text" style="display: none;" name="time" value="<%=appointment.time%>"/>
+                                    <input type="text" style="display: none;" name="date" value="<%=appointment.date%>"/>
+                                    <button class="btn btn-danger btn-block" type="submit">CANCEL</button>  
+                                </form>
                             </div>
                     </a>
 
                     <%})}else{%>
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">You have an no appointment till now.</h5>
+                                <h5 class="mb-1 text-muted">You have an no appointment till now.</h5>
                                 </div>
                         </a>
                     <%}%>
