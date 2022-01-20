@@ -16,7 +16,9 @@ const session = require('express-session');
 const MongoDBSession = require('connect-mongodb-session')(session);
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
-const { render } = require("express/lib/response");
+const flash = require ('connect-flash');
+const alert = require('alert')
+const { render, redirect } = require("express/lib/response");
 
 const port = process.env.PORT || 3000;
 
@@ -38,6 +40,7 @@ const store = new MongoDBSession({
     collection: "sessions",
 })
 
+app.use(flash());
 app.use(express.static(static_path));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}))
@@ -101,7 +104,7 @@ app.get("/aboutUs", isNotAuth,(req, res) =>{
 
 // ------------------Get User Registration------------------ 
 app.get("/userRegistration", isNotAuth, function(req,res){
-    res.render('userRegistration',{"title":"Register"});
+    res.render('userRegistration',{"title":"Register", 'message':'', 'error': ''});
 })
 
 // ------------------User Registration---------------
@@ -119,28 +122,27 @@ app.post("/userRegistration", isNotAuth, async (req,res)=> {
     
     user.save(function(err,newuser){
         if(err){
-            console.log(err);
-            
-            res.send("Cannot create User with these credentials");
+            // console.log(err);            
+            return res.render("userRegistration",{"message":"", 'error':'Cannot create User with these credentials'});
         }
         else{
             console.log(newuser)
-            res.render('index');
+            res.render('index', {'message':'', error:""});
             //   ------------------sending email------------------
-              var mailOptions = {
-                from: EMAIL,
-                to: newuser.email,
-                subject: 'Successful registration',
-                text: 'Congratulation you have been registered successfully'
-              };
+            //   var mailOptions = {
+            //     from: EMAIL,
+            //     to: newuser.email,
+            //     subject: 'Successful registration',
+            //     text: 'Congratulation you have been registered successfully'
+            //   };
               
-              transporter.sendMail(mailOptions, function(error, info){
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log('Email sent: ' + info.response);
-                }
-              });
+            //   transporter.sendMail(mailOptions, function(error, info){
+            //     if (error) {
+            //       console.log(error);
+            //     } else {
+            //       console.log('Email sent: ' + info.response);
+            //     }
+            //   });
         }
     });
          
@@ -149,7 +151,7 @@ app.post("/userRegistration", isNotAuth, async (req,res)=> {
 
 // ---------------------Get Counsellor Registration-------------------------------------
 app.get("/counsellorRegistration", isNotAuth, function(req,res){
-    res.render("counsellorRegistration",{"title":"Register"});
+    res.render("counsellorRegistration",{"title":"Register",'message':'', error:""});
 })
 
 // --------------Post Counsellor Registration--------------------------------
@@ -173,8 +175,7 @@ app.post("/counsellorRegistration", upload.single('profileImage'), isNotAuth, as
     counsellor.save(function(err,newcounsellor){
         if(err){
             console.log(err);
-            
-            return res.send("Cannot create Counsellor with these credentials");
+            return res.render('counsellorRegistration', {"error":"Cannot create Counsellor with these credentials", 'message': ''});
         }
         else{
             console.log(newcounsellor)
@@ -203,7 +204,7 @@ app.post("/counsellorRegistration", upload.single('profileImage'), isNotAuth, as
 
 // --------------------------Get User Login----------------------
 app.get("/userLogin", isNotAuth, function(req,res){
-    res.render("userLogin",{"title":"Login"});
+    res.render("userLogin",{"title":"Login", 'message':'', error:""});
 })
 
 //--------------Post User Login-----------------------------------
@@ -212,13 +213,14 @@ app.post("/userLogin", isNotAuth, async (req,res) =>{
     const user = await User.findOne({email:email});
 
     if(!user){
-        return res.render('userLogin');
+        // req.flash('message','Wrong email address');
+        return res.render('userLogin', {"error":"Wrong email address", 'message': ''})
     }
     
     const isMatch = await bcrypt.compare(password,user.password);
      
     if(!isMatch){
-        return res.send("Wrong password");
+        return res.render('userLogin', {"error":"Invalid Passoword", 'message': ''})
     }
     else{
         req.session.isAuth=true;
@@ -230,7 +232,7 @@ app.post("/userLogin", isNotAuth, async (req,res) =>{
 
 // -----------------Get Counsellor Login---------------------------------------
 app.get("/counsellorLogin", isNotAuth, function(req,res){
-    res.render("counsellorLogin",{"title":"Login"});
+    res.render("counsellorLogin",{"title":"Login",  'message':'', 'error': ''});
 })
 //  ---------------------Post Counsellor Login----------------------------------------
 app.post("/counsellorLogin", async (req,res) =>{
@@ -238,13 +240,14 @@ app.post("/counsellorLogin", async (req,res) =>{
     const counsellor = await Counsellor.findOne({email:email});
 
     if(!counsellor){
-        return res.redirect('/counsellorLogin');
+        // return res.redirect('/counsellorLogin');
+        return res.render('counsellorLogin', {"error":"Email doesn't exists", 'message': ''})
     }
     
     const isMatch = await bcrypt.compare(password,counsellor.password);
      
     if(!isMatch){
-        return res.send("Wrong password");
+        return res.render('counsellorLogin', {"error":"Wrong password", 'message': ''})
     }
     else{
         req.session.isAuth=true;
@@ -267,7 +270,7 @@ app.get("/userDashboard", isUserAuth, async (req,res) =>{
     if(appointments===null){
         appointments=[]
     }
-    res.render("userDashboard", {"title":"Dashboard","counsellors" : counsellors, "appointments": appointments})
+    res.render("userDashboard", {"title":"Dashboard","counsellors" : counsellors, "appointments": appointments, error :'', message:''})
 
     
 })
@@ -277,7 +280,7 @@ app.get("/setAppointment", isUserAuth, (req,res) => {
     var counsellor_id=req.query.counsellor_id;
     // console.log("counsellor id------------------------------------------------")
     // console.log(counsellor_id);
-    res.render('setAppointment', {"title": "Set Appoitment", "counsellor_id": counsellor_id, "date": '',"slotsBooked":[{"time":"10:00"},{ "time": "13:00"}]})
+    res.render('setAppointment', {"title": "Set Appoitment", "counsellor_id": counsellor_id, "date": '',"slotsBooked":[]})
 })
 
 //  ---------------------------Check Availability of counsellor on particular date---------------------------------
@@ -311,7 +314,7 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
     const counsellor_schedule_clear = await Appointment.findOne(counsellor_query);
     if(user_schedule_clear!=null || counsellor_schedule_clear!=null)
     {
-        return res.send("Oops.. seems like you already have an appoinment at this time try another time");
+        return res.render("error",{error:"Oops.. seems like you already have an appoinment at this time try another time"});
     }
 
     // console.log("displaying counsellor id");
@@ -342,7 +345,8 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
             res.send("Cannot create appointment with these credentials");
         }
         else{
-            console.log(newappointment)
+            console.log(newappointment);
+            alert("Appointment booked successfully");
             res.redirect("/userDashboard");
             // res.redirect('userDashboard.html');
 
@@ -387,7 +391,7 @@ app.post("/setAppointment", isUserAuth, async (req,res) =>{
 //------------------------------Get Counsellor Dashboard-----------------------------------------------------
 
 app.get("/counsellorDashboard", isCounsellorAuth, async (req,res) =>{
-    var counsellor_projection = { name:1, qualification:1, description:1, age:1, image:1}
+    var counsellor_projection = { name:1, qualification:1, description:1, age:1, image:1, email:1,phone:1, address:1}
     var counsellor_id = JSON.parse(JSON.stringify(req.session.counsellor_id))
     var query = {_id:counsellor_id}
     var appointment_projection = { date:1,time:1, user:1 };
@@ -466,7 +470,55 @@ app.post("/deleteAppointment", isCounsellorAuth, async (req, res) => {
             });
         }
     })
+    alert("Appointment deleted successfully");
     res.redirect("/counsellorDashboard");
+})
+
+app.post('/updateUserDetails', isUserAuth, async (req,res) =>{
+    var name= req.body.name;
+    var age= req.body.age;
+    var phone = req.body.phone;
+    var address =req.body.address;
+    console.log(name);
+    console.log(age);
+    console.log(phone);
+    var user = await User.findOne({_id:req.session.user_id});
+    
+
+    user.name=name;
+    user.age=age;
+    user.phone=phone;
+    user.address=address;
+    // console.log(user);
+    user.save();
+    res.redirect('/userProfile');
+
+})
+
+app.post('/updateCounsellorDetails', isCounsellorAuth, async (req,res) =>{
+    var name= req.body.name;
+    var age= req.body.age;
+    var phone = req.body.phone;
+    var address =req.body.address;
+    var qualificaiton =req.body.qualificaiton;
+    var description =req.body.description;
+    console.log(name);
+    console.log(age);
+    console.log(phone);
+    var counsellor = await Counsellor.findOne({_id:req.session.counsellor_id});
+    
+
+    counsellor.name=name;
+    counsellor.age=age;
+    counsellor.phone=phone;
+    counsellor.address=address;
+    counsellor.qualificaiton=qualificaiton;
+    counsellor.description=description;
+
+    // console.log(user);
+    counsellor.save();
+    res.redirect('/counsellorDashboard');
+
 })
 
 app.get("/logout", (req,res) => {

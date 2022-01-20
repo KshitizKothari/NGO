@@ -2,7 +2,7 @@
 <html>
 <head>
     
-    <title>User Sign Up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="../css/registrationStyle.css">
     <script defer src="../js/userRegistration.js"></script>
 </head>
@@ -10,6 +10,21 @@
   <!-- IMPORTING HEADER -->
 
 <%- include('header') %>
+<% if(message.length > 0){
+  %>
+  <div class="alert alert-primary text-center">
+  <%= message %>
+  </div>
+  
+  <% }%>
+
+<% if(error.length > 0){
+  %>
+  <div class="alert alert-danger text-center">
+  <%= error %>
+  </div>
+  
+  <% }%>
   <div class="container">
 <form action="/userLogin" method="POST" id="form" style="border:1px solid #ccc">
   

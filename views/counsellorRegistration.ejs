@@ -10,7 +10,21 @@
 <!-- IMPORTING HEADER -->
 
 <%- include('header') %>
+<% if(message.length > 0){
+  %>
+  <div class="alert alert-primary text-center">
+  <%= message %>
+  </div>
+  
+  <% }%>
 
+<% if(error.length > 0){
+  %>
+  <div class="alert alert-danger text-center">
+  <%= error %>
+  </div>
+  
+  <% }%>
   <!-- - Name, age, qualification degree, phone, govt id, email, password, description (about the counsellor) -->
   <div class="container">
     <form action="/counsellorRegistration" method="POST" enctype="multipart/form-data" id="form" style="border:1px solid #ccc">

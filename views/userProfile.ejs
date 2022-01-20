@@ -13,6 +13,7 @@
 
 
     <link rel="stylesheet" href="css/userDashboard.css">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 </head>
 <!------ Include the above in your HEAD tag ---------->
 <body>
@@ -40,6 +41,11 @@
                                 <a class="nav-link" href="/userDashboard">HOME</a>
                             <!-- </form> -->
                         </li>
+                        <li class="nav-item active">
+                            
+                            <a class="nav-link" href="#">PROFILE</a>
+                       
+                    </li>
                         <li class="nav-item">
                             <!-- <form action="/logout" method="POST"> -->
                                 <a class="nav-link" href="/logout">LOGOUT</a>
@@ -55,29 +61,98 @@
 
         <div class="container">
 
-            <div class="row">
+            <form class="row" action='/updateUserDetails' method="POST">
 
-                <div class="col card">
-                    <h1 class="font-weight-bold">Profile</h1>
-                    <!-- <img src="uploads/<%= user.image %>" width="100px" style="border-radius: 50%;" alt="profile image"/> -->
-                    <h2 class="font-weight-normal">Name : <%=user.name%></h1>
-                    <h4 class="d-block">Age : <%= user.age %></h4>
-                    <h4 class="d-block">Phone Number : <%= user.phone%></h4>
-                    <h4 class="d-block">Address : <%= user.address%></h4>
-                    <h4 class="d-block">Government ID : <%= user.govtId%></h4>
-
+                <div class="card-body">
+                    <h1 id="head_title" class="mb-4">Profile</h1>
+                    <div class="row mb-3">
+                        
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Name</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            <h5 class="font-weight-normal" style="display: ;"><%=user.name%></h5>
+                            <input type="text" style="display: none;" name="name" value="<%=user.name%>" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Email</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            <h5 class="font-weight-normal" style="display: ;"><%=user.email%></h5>
+                            <input disabled type="text" style="display: none;" value="<%=user.email%>"  class="form-control">
+                        </div>
+                    </div>
+      <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Age</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            <h5 class="font-weight-normal" style="display: ;"><%=user.age%></h5>
+                            <input type="text" style="display: none;" name="age" value="<%=user.age%>" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Phone</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            <h5 class="font-weight-normal" style="display: ;"><%=user.phone%></h5>
+                            <input type="text" style="display: none;" name="phone" value="<%=user.phone%>" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Address</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            <h5 class="font-weight-normal" style="display: ;"><%=user.address%></h5>
+                            <input type="text" style="display: none;" name="address" value="<%=user.address%>" class="form-control">
+                        </div>
+                    </div>
+                    
+      
+      <br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9 text-secondary">
+                            <button type="submit" id="submit_btn" class="btn btn-primary px-4" style="display: none;" >Save Changes</button>
+                        </div>
+                    </div>
                 </div>
 
-            <div class="col-sm-4 col-md-4 mt-3">
-               
-            </div>
+            </form>
+                
+            <i onclick="editFunction()" class='far fa-edit' style='font-size:36px'></i>
         </div>
 
         </div>
     </div>
 
 
+<script>
+     function editFunction(){
 
+// document.getElementById('edit').onclick = function() {
+
+        console.log("function called");
+
+    const collection = document.getElementsByClassName("font-weight-normal");
+    for (let i = 0; i < collection.length; i++) {
+    collection[i].style.display = "none";
+    }
+    const collection_input = document.getElementsByClassName("form-control");
+    for (let i = 0; i < collection_input.length; i++) {
+    collection_input[i].style.display = "";
+    }
+    
+    document.getElementById('submit_btn').style.display='';
+    document.getElementById('head_title').innerHTML='Update Profile';
+
+
+    }
+</script>
 
 
 

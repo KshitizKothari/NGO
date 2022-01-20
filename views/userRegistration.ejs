@@ -10,7 +10,21 @@
   <!-- IMPORTING HEADER -->
 
 <%- include('header') %>
+<% if(message.length > 0){
+  %>
+  <div class="alert alert-primary text-center">
+  <%= message %>
+  </div>
+  
+  <% }%>
 
+<% if(error.length > 0){
+  %>
+  <div class="alert alert-danger text-center">
+  <%= error %>
+  </div>
+  
+  <% }%>
   <div class="container">
 <form action="/userRegistration" method="POST" id="form" style="border:1px solid #ccc">
   
