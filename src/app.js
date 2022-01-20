@@ -129,20 +129,20 @@ app.post("/userRegistration", isNotAuth, async (req,res)=> {
             console.log(newuser)
             res.render('index', {'message':'', error:""});
             //   ------------------sending email------------------
-            //   var mailOptions = {
-            //     from: EMAIL,
-            //     to: newuser.email,
-            //     subject: 'Successful registration',
-            //     text: 'Congratulation you have been registered successfully'
-            //   };
+              var mailOptions = {
+                from: EMAIL,
+                to: newuser.email,
+                subject: 'Successful registration',
+                text: 'Congratulation you have been registered successfully'
+              };
               
-            //   transporter.sendMail(mailOptions, function(error, info){
-            //     if (error) {
-            //       console.log(error);
-            //     } else {
-            //       console.log('Email sent: ' + info.response);
-            //     }
-            //   });
+              transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
         }
     });
          
