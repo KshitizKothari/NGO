@@ -127,7 +127,7 @@ app.post("/userRegistration", isNotAuth, async (req,res)=> {
         }
         else{
             console.log(newuser)
-            res.render('index', {'message':'', error:""});
+            res.render('userLogin', {title:"Login Page",message: "You have successfully registered", error:''});
             //   ------------------sending email------------------
               var mailOptions = {
                 from: EMAIL,
@@ -179,7 +179,7 @@ app.post("/counsellorRegistration", upload.single('profileImage'), isNotAuth, as
         }
         else{
             console.log(newcounsellor)
-            res.render('index');
+            res.render('counsellorLogin',{title:"Login Page",message: "You have successfully registered", error:''});
             //   ------------------sending email------------------  
             var mailOptions = {
             from: EMAIL,
